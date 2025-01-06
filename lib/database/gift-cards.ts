@@ -11,7 +11,6 @@ export interface GiftCard {
   purchaser_email: string;
   purchaser_phone: string;
   purchaser_name: string;
-  recipient_email?: string;
   status: GiftCardStatus;
   created_at: string;
   updated_at: string;
@@ -57,7 +56,6 @@ export async function createGiftCard({
   purchaser_email,
   purchaser_phone,
   purchaser_name,
-  recipient_email,
   status,
 }: Omit<GiftCard, 'id' | 'created_at' | 'updated_at'>) {
   const supabase = createClient();
@@ -72,7 +70,6 @@ export async function createGiftCard({
         purchaser_email,
         purchaser_phone,
         purchaser_name,
-        recipient_email,
         status,
       }
     ])
