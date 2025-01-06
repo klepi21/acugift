@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     // Update gift card status
-    await updateGiftCardStatus(giftCard.code, 'pending', transactionId);
+    await updateGiftCardStatus(giftCard.code, 'active', transactionId);
 
     // Send emails
     await sendGiftCardEmails(giftCard);

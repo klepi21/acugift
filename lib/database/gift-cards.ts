@@ -95,3 +95,30 @@ export async function getGiftCard(code: string) {
     .eq('code', code)
     .single();
 }
+
+export async function updateGiftCardStatus(
+  code: string, 
+  status: GiftCardStatus,
+  transactionId?: string
+) {
+  const supabase = createClient();
+  
+  const updateData: any = { status };
+  if (transactionId) {
+    updateData.transaction_id = transactionId;
+  }
+
+  const { data, error } = await supabase
+    .from('gift_cards')
+    .update(updateData)
+    .eq('code', code)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating gift card status:', error);
+    throw error;
+  }
+
+  return { data, error };
+}
