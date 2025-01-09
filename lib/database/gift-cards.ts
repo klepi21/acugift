@@ -11,6 +11,7 @@ export interface GiftCard {
   purchaser_email: string;
   purchaser_phone: string;
   purchaser_name: string;
+  recipient_email: string | null;
   status: GiftCardStatus;
   created_at: string;
   updated_at: string;
