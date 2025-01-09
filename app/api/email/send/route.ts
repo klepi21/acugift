@@ -1,44 +1,30 @@
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Create reusable transporter object using Gmail SMTP
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    // Use an App Password if you have 2FA enabled
-    // https://support.google.com/accounts/answer/185833
-    pass: process.env.GMAIL_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { to, subject, html } = body;
+    const { to, subject, html } = await request.json();
 
-    const msg = {
+    const { data, error } = await resend.emails.send({
       from: 'info@avgouste.gr',
       to,
       subject,
       html,
-    };
+    });
 
-    try {
-      await transporter.sendMail(msg);
-      return NextResponse.json({ success: true });
-    } catch (error) {
-      console.error('Email error:', error);
-      return NextResponse.json(
-        { error: 'Failed to send email' },
-        { status: 500 }
-      );
+    if (error) {
+      console.error('Resend error:', error);
+      throw error;
     }
+
+    return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error('Request error:', error);
+    console.error('Email error:', error);
     return NextResponse.json(
-      { error: 'Invalid request' },
-      { status: 400 }
+      { error: 'Failed to send email' },
+      { status: 500 }
     );
   }
 } 
