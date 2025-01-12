@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     const endTimeDate = new Date(`1970-01-01T${end_time}`);
 
     while (currentTime < endTimeDate) {
-      const slotEndTime = addMinutes(currentTime, 15);
+      const slotEndTime = addMinutes(currentTime, 25);
       
       slots.push({
         wellness_day_id: dayData.id,

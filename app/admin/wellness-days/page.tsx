@@ -174,33 +174,61 @@ export default function AdminWellnessDaysPage() {
           </h2>
           <div className="grid md:grid-cols-4 gap-4">
             <div>
-              <label className="text-sm text-[#8B4513]">Ημερομηνία</label>
-              <Input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
+              <label className="text-sm font-medium text-[#8B4513] mb-2 block">Ημερομηνία</label>
+              <div className="relative">
+                <Input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="bg-white/50 border-[#8B4513]/20 focus:border-[#8B4513] focus:ring-[#8B4513] rounded-xl"
+                  min={format(new Date(), 'yyyy-MM-dd')}
+                />
+              </div>
             </div>
             <div>
-              <label className="text-sm text-[#8B4513]">Ώρα Έναρξης</label>
-              <Input
-                type="time"
+              <label className="text-sm font-medium text-[#8B4513] mb-2 block">Ώρα Έναρξης</label>
+              <select
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-              />
+                className="w-full bg-white/50 border-[#8B4513]/20 focus:border-[#8B4513] focus:ring-[#8B4513] rounded-xl h-10 px-3"
+              >
+                <option value="">Επιλέξτε</option>
+                {Array.from({ length: 48 }, (_, i) => {
+                  const hour = Math.floor(i / 2);
+                  const minute = i % 2 === 0 ? '00' : '30';
+                  const time = `${hour.toString().padStart(2, '0')}:${minute}:00`;
+                  return (
+                    <option key={time} value={time}>
+                      {time.slice(0, 5)}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
             <div>
-              <label className="text-sm text-[#8B4513]">Ώρα Λήξης</label>
-              <Input
-                type="time"
+              <label className="text-sm font-medium text-[#8B4513] mb-2 block">Ώρα Λήξης</label>
+              <select
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
-              />
+                className="w-full bg-white/50 border-[#8B4513]/20 focus:border-[#8B4513] focus:ring-[#8B4513] rounded-xl h-10 px-3"
+              >
+                <option value="">Επιλέξτε</option>
+                {Array.from({ length: 48 }, (_, i) => {
+                  const hour = Math.floor(i / 2);
+                  const minute = i % 2 === 0 ? '00' : '30';
+                  const time = `${hour.toString().padStart(2, '0')}:${minute}:00`;
+                  return (
+                    <option key={time} value={time}>
+                      {time.slice(0, 5)}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
             <div className="flex items-end">
               <Button
                 onClick={createWellnessDay}
-                className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white"
+                className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white h-10 rounded-xl transition-colors"
                 disabled={isLoading}
               >
                 {isLoading ? "Επεξεργασία..." : "Δημιουργία"}

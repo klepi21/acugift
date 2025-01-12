@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { format } from 'date-fns';
 import { el } from 'date-fns/locale';
-import { Heart, Clock, Euro, CalendarDays, Sparkles, Brain, HeartPulse, Bed, Zap } from 'lucide-react';
+import { Heart, Clock, Euro, CalendarDays, Sparkles, Brain, HeartPulse, Bed, Zap, MapPin, Phone, Calendar } from 'lucide-react';
 
 const formSchema = z.object({
   fullName: z.string().min(3, 'Παρακαλώ συμπληρώστε το ονοματεπώνυμό σας'),
@@ -160,171 +160,119 @@ export default function WellnessDayPage() {
     }
   };
 
-  if (!wellnessDay) {
-    return (
-      <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white py-12 px-4">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <Card className="p-8">
-            <div className="text-center space-y-4 mb-8">
-              <h1 className="text-3xl font-bold text-[#8B4513]">
-                Wellness Open Day
-              </h1>
-              <p className="text-[#8B4513]/80 max-w-2xl mx-auto">
-                Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού σε μια ειδικά σχεδιασμένη συνεδρία
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 mb-12">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-[#8B4513]">
-                  <Clock className="h-5 w-5" />
-                  <span>15λεπτη συνεδρία γνωριμίας</span>
-                </div>
-                <div className="flex items-center gap-3 text-[#8B4513]">
-                  <Euro className="h-5 w-5" />
-                  <span>Μόνο 10€</span>
-                </div>
-                <div className="flex items-start gap-3 text-[#8B4513]">
-                  <Heart className="h-5 w-5 mt-1 shrink-0" />
-                  <span>
-                    Εξατομικευμένη συνεδρία βελονισμού για χαλάρωση και ευεξία
-                  </span>
-                </div>
-                <div className="flex items-start gap-3 text-[#8B4513]">
-                  <Sparkles className="h-5 w-5 mt-1 shrink-0" />
-                  <span>
-                    Ιδανική ευκαιρία για όσους θέλουν να γνωρίσουν τα οφέλη του βελονισμού
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-white/50 p-6 rounded-lg">
-                <h2 className="text-xl font-semibold text-[#8B4513] mb-4">
-                  Τι να Περιμένετε
-                </h2>
-                <ul className="space-y-3 text-[#8B4513]/80">
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#8B4513] font-bold">•</span>
-                    Προσωπική συνάντηση με την Ιατρό
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#8B4513] font-bold">•</span>
-                    Αξιολόγηση των αναγκών σας
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#8B4513] font-bold">•</span>
-                    Εισαγωγή στη θεραπεία του βελονισμού
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-[#8B4513] font-bold">•</span>
-                    Σύντομη θεραπευτική συνεδρία
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="max-w-2xl mx-auto">
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
-                <p className="text-[#8B4513] mb-2 font-medium">
-                  Δεν υπάρχουν προγραμματισμένες ημέρες αυτή τη στιγμή.
-                </p>
-                <p className="text-[#8B4513]/80 text-sm">
-                  Εγγραφείτε παρακάτω για να ενημερωθείτε πρώτοι για την επόμενη διαθέσιμη ημερομηνία!
-                </p>
-              </div>
-
-              <NotificationSignup />
-            </div>
-          </Card>
-
-          <Card className="p-8">
-            <h2 className="text-2xl font-semibold text-[#8B4513] mb-6 text-center">
-              Οφέλη Βελονισμού
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center space-y-2">
-                <Brain className="h-8 w-8 text-[#8B4513] mx-auto" />
-                <p className="text-[#8B4513]">Μείωση Στρες</p>
-              </div>
-              <div className="text-center space-y-2">
-                <HeartPulse className="h-8 w-8 text-[#8B4513] mx-auto" />
-                <p className="text-[#8B4513]">Ανακούφιση από Πόνους</p>
-              </div>
-              <div className="text-center space-y-2">
-                <Bed className="h-8 w-8 text-[#8B4513] mx-auto" />
-                <p className="text-[#8B4513]">Καλύτερος Ύπνος</p>
-              </div>
-              <div className="text-center space-y-2">
-                <Zap className="h-8 w-8 text-[#8B4513] mx-auto" />
-                <p className="text-[#8B4513]">Αύξηση Ενέργειας</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </main>
-    );
-  }
-
   const allSlotsBooked = slots.every(slot => slot.is_booked);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white py-12 px-4">
       <div className="max-w-4xl mx-auto space-y-8">
-        <Card className="p-8">
-          <div className="text-center space-y-4 mb-8">
-            <h1 className="text-3xl font-bold text-[#8B4513]">
-              Wellness Open Day
-            </h1>
-            <p className="text-[#8B4513]/80 max-w-2xl mx-auto">
-              Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού σε μια ειδικά σχεδιασμένη συνεδρία
-            </p>
-          </div>
-
-          {allSlotsBooked ? (
-            <div className="text-center space-y-6">
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-auto max-w-xl">
-                <p className="text-[#8B4513]">
-                  Όλες οι διαθέσιμες ώρες έχουν κλειστεί για αυτή την ημέρα.
-                </p>
-              </div>
-              <NotificationSignup />
+        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl overflow-hidden">
+          <div className="relative">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FBDAC6]/20 rounded-full -translate-y-16 translate-x-16" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B4513]/10 rounded-full translate-y-12 -translate-x-12" />
+            
+            <div className="text-center space-y-6 mb-12 relative">
+              <h1 className="text-4xl md:text-5xl font-bold text-[#8B4513] tracking-tight">
+                Wellness Open Day
+              </h1>
+              <p className="text-lg text-[#8B4513]/80 max-w-2xl mx-auto leading-relaxed">
+                Γνωρίστε τον βελονισμό σε μια ειδική ημέρα γνωριμίας. Μια μοναδική ευκαιρία να εξοικειωθείτε με τη θεραπεία και να ανακαλύψετε τα οφέλη της
+              </p>
             </div>
-          ) : (
-            <>
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 text-[#8B4513]">
-                    <CalendarDays className="h-5 w-5" />
-                    <span>
-                      {format(new Date(wellnessDay.date), 'd MMMM yyyy', { locale: el })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[#8B4513]">
-                    <Clock className="h-5 w-5" />
-                    <span>15λεπτη συνεδρία</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[#8B4513]">
-                    <Euro className="h-5 w-5" />
-                    <span>10€ (Πληρωμή στο ιατρείο)</span>
+
+            <div className="grid md:grid-cols-2 gap-12 mb-12 relative">
+              <div className="space-y-6">
+                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
+                  <div className="flex items-center gap-4 text-[#8B4513]">
+                    <Clock className="h-8 w-8" />
+                    <div>
+                      <h3 className="font-semibold">Διάρκεια Συνεδρίας</h3>
+                      <p className="text-[#8B4513]/80">25λεπτη συνεδρία γνωριμίας</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 text-[#8B4513]">
-                    <Heart className="h-5 w-5 mt-1 shrink-0" />
-                    <span>
-                      Εξατομικευμένη συνεδρία βελονισμού για χαλάρωση και ευεξία
-                    </span>
+                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
+                  <div className="flex items-center gap-4 text-[#8B4513]">
+                    <Euro className="h-8 w-8" />
+                    <div>
+                      <h3 className="font-semibold">Κόστος</h3>
+                      <p className="text-[#8B4513]/80">Μόνο 10€</p>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-3 text-[#8B4513]">
-                    <Sparkles className="h-5 w-5 mt-1 shrink-0" />
-                    <span>
-                      Ιδανική ευκαιρία για όσους θέλουν να γνωρίσουν τα οφέλη του βελονισμού
-                    </span>
+                </div>
+
+                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
+                  <div className="flex items-start gap-4 text-[#8B4513]">
+                    <Heart className="h-8 w-8 shrink-0" />
+                    <div>
+                      <h3 className="font-semibold">Εξατομικευμένη Εμπειρία</h3>
+                      <p className="text-[#8B4513]/80">
+                        Προσωπική συνεδρία βελονισμού για χαλάρωση και ευεξία
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
 
+              <div className="bg-[#8B4513]/5 p-8 rounded-2xl backdrop-blur-sm">
+                <h2 className="text-2xl font-semibold text-[#8B4513] mb-6">
+                  Τι να Περιμένετε
+                </h2>
+                <ul className="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
+                      <span className="text-[#8B4513] font-bold">1</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-[#8B4513]">Προσωπική Συνάντηση</h4>
+                      <p className="text-[#8B4513]/80 text-sm">Γνωριμία με την Ιατρό</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
+                      <span className="text-[#8B4513] font-bold">2</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-[#8B4513]">Αξιολόγηση</h4>
+                      <p className="text-[#8B4513]/80 text-sm">Κατανόηση των αναγκών σας</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
+                      <span className="text-[#8B4513] font-bold">3</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-[#8B4513]">Θεραπεία</h4>
+                      <p className="text-[#8B4513]/80 text-sm">Εισαγωγή στη μέθοδο του βελονισμού</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {!wellnessDay ? (
+              <div className="max-w-2xl mx-auto">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8 rounded-r-lg shadow-sm">
+                  <p className="text-[#8B4513] mb-2 font-medium">
+                    Δεν υπάρχουν προγραμματισμένες ημέρες αυτή τη στιγμή.
+                  </p>
+                  <p className="text-[#8B4513]/80 text-sm">
+                    Εγγραφείτε παρακάτω για να ενημερωθείτε πρώτοι για την επόμενη διαθέσιμη ημερομηνία!
+                  </p>
+                </div>
+                <NotificationSignup />
+              </div>
+            ) : allSlotsBooked ? (
+              <div className="text-center space-y-6">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-auto max-w-xl rounded-r-lg shadow-sm">
+                  <p className="text-[#8B4513]">
+                    Όλες οι διαθέσιμες ώρες έχουν κλειστεί για αυτή την ημέρα.
+                  </p>
+                </div>
+                <NotificationSignup />
+              </div>
+            ) : (
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h2 className="text-xl font-semibold text-[#8B4513] mb-4">
@@ -412,8 +360,62 @@ export default function WellnessDayPage() {
                   </Form>
                 </div>
               </div>
-            </>
-          )}
+            )}
+          </div>
+        </Card>
+
+       
+
+        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
+          <h2 className="text-2xl font-semibold text-[#8B4513] mb-8 text-center">
+            Οφέλη Βελονισμού
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
+              <Brain className="h-10 w-10 text-[#8B4513] mx-auto" />
+              <p className="text-[#8B4513] font-medium">Μείωση Στρες</p>
+            </div>
+            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
+              <HeartPulse className="h-10 w-10 text-[#8B4513] mx-auto" />
+              <p className="text-[#8B4513] font-medium">Ανακούφιση από Πόνους</p>
+            </div>
+            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
+              <Bed className="h-10 w-10 text-[#8B4513] mx-auto" />
+              <p className="text-[#8B4513] font-medium">Καλύτερος Ύπνος</p>
+            </div>
+            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
+              <Zap className="h-10 w-10 text-[#8B4513] mx-auto" />
+              <p className="text-[#8B4513] font-medium">Αύξηση Ενέργειας</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-[#8B4513]">
+                <MapPin className="h-6 w-6 shrink-0" />
+                <div>
+                  <h3 className="font-semibold">Διεύθυνση</h3>
+                  <p className="text-[#8B4513]/80">Εφέσου 20, Άνω Τούμπα</p>
+                  <p className="text-[#8B4513]/80">Θεσσαλονίκη</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-[#8B4513]">
+                <Phone className="h-6 w-6 shrink-0" />
+                <div>
+                  <h3 className="font-semibold">Τηλέφωνα Επικοινωνίας</h3>
+                  <p className="text-[#8B4513]/80">2310 930 900</p>
+                  <p className="text-[#8B4513]/80">6981 958 248</p>
+                </div>
+              </div>
+            </div>
+
+            
+          </div>
         </Card>
       </div>
     </main>
