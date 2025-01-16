@@ -173,18 +173,18 @@ export default function WellnessDayPage() {
   if (!wellnessDay) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
           <Feature showEmailSignup={true} />
 
-          <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
-            <div className="grid md:grid-cols-3 gap-8">
+          <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               <div className="space-y-4">
                 <div className="flex items-center gap-3 text-[#8B4513]">
                   <MapPin className="h-6 w-6 shrink-0" />
                   <div>
-                    <h3 className="font-semibold">Διεύθυνση</h3>
-                    <p className="text-[#8B4513]/80">Εφέσου 20, Άνω Τούμπα</p>
-                    <p className="text-[#8B4513]/80">Θεσσαλονίκη</p>
+                    <h3 className="font-semibold text-base md:text-lg">Διεύθυνση</h3>
+                    <p className="text-[#8B4513]/80 text-sm md:text-base">Εφέσου 20, Άνω Τούμπα</p>
+                    <p className="text-[#8B4513]/80 text-sm md:text-base">Θεσσαλονίκη</p>
                   </div>
                 </div>
               </div>
@@ -193,9 +193,9 @@ export default function WellnessDayPage() {
                 <div className="flex items-center gap-3 text-[#8B4513]">
                   <Phone className="h-6 w-6 shrink-0" />
                   <div>
-                    <h3 className="font-semibold">Τηλέφωνα Επικοινωνίας</h3>
-                    <p className="text-[#8B4513]/80">2310 930 900</p>
-                    <p className="text-[#8B4513]/80">6981 958 248</p>
+                    <h3 className="font-semibold text-base md:text-lg">Τηλέφωνα Επικοινωνίας</h3>
+                    <p className="text-[#8B4513]/80 text-sm md:text-base">2310 930 900</p>
+                    <p className="text-[#8B4513]/80 text-sm md:text-base">6981 958 248</p>
                   </div>
                 </div>
               </div>
@@ -209,23 +209,23 @@ export default function WellnessDayPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-4 md:px-6">
         <Feature showEmailSignup={false} />
 
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-8">
+        <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-6 md:mt-8">
           <div className="max-w-2xl mx-auto">
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold text-[#8B4513] mb-2">
+            <div className="mb-6 md:mb-8">
+              <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">
                 Διαθέσιμες Ώρες - {format(new Date(wellnessDay.date), 'dd MMMM yyyy', { locale: el })}
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                 {slots.map((slot) => (
                   <Button
                     key={slot.id}
                     onClick={() => setSelectedSlot(slot)}
                     disabled={slot.is_booked}
                     variant={selectedSlot?.id === slot.id ? 'default' : 'outline'}
-                    className={`w-full ${
+                    className={`w-full text-sm md:text-base py-2 md:py-3 ${
                       slot.is_booked
                         ? 'bg-gray-100 text-gray-400'
                         : selectedSlot?.id === slot.id
@@ -241,17 +241,17 @@ export default function WellnessDayPage() {
 
             {selectedSlot && !selectedSlot.is_booked && (
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
                   <FormField
                     control={form.control}
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#8B4513]">Ονοματεπώνυμο</FormLabel>
+                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Ονοματεπώνυμο</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                          <Input {...field} className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-sm" />
                       </FormItem>
                     )}
                   />
@@ -260,11 +260,11 @@ export default function WellnessDayPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#8B4513]">Email</FormLabel>
+                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Email</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="bg-white/50 border-[#8B4513]/20" />
+                          <Input {...field} type="email" className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-sm" />
                       </FormItem>
                     )}
                   />
@@ -273,17 +273,17 @@ export default function WellnessDayPage() {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-[#8B4513]">Τηλέφωνο</FormLabel>
+                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Τηλέφωνο</FormLabel>
                         <FormControl>
-                          <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                          <Input {...field} className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-sm" />
                       </FormItem>
                     )}
                   />
                   <Button
                     type="submit"
-                    className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white"
+                    className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white text-sm md:text-base py-2 md:py-3"
                     disabled={isLoading}
                   >
                     {isLoading ? 'Επεξεργασία...' : 'Κράτηση'}
