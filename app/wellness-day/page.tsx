@@ -19,6 +19,7 @@ import {
 import { format } from 'date-fns';
 import { el } from 'date-fns/locale';
 import { Heart, Clock, Euro, CalendarDays, Sparkles, Brain, HeartPulse, Bed, Zap, MapPin, Phone, Calendar } from 'lucide-react';
+import { Feature } from '@/components/ui/feature-with-advantages';
 
 const formSchema = z.object({
   fullName: z.string().min(3, 'Παρακαλώ συμπληρώστε το ονοματεπώνυμό σας'),
@@ -161,6 +162,59 @@ export default function WellnessDayPage() {
   };
 
   const allSlotsBooked = slots.every(slot => slot.is_booked);
+
+  if (!wellnessDay) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
+        <div className="max-w-6xl mx-auto">
+          <Feature />
+
+          <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-[#8B4513]">
+                  <MapPin className="h-6 w-6 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold">Διεύθυνση</h3>
+                    <p className="text-[#8B4513]/80">Εφέσου 20, Άνω Τούμπα</p>
+                    <p className="text-[#8B4513]/80">Θεσσαλονίκη</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-[#8B4513]">
+                  <Phone className="h-6 w-6 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold">Τηλέφωνα Επικοινωνίας</h3>
+                    <p className="text-[#8B4513]/80">2310 930 900</p>
+                    <p className="text-[#8B4513]/80">6981 958 248</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 text-[#8B4513]">
+                  <Calendar className="h-6 w-6 shrink-0" />
+                  <div>
+                    <h3 className="font-semibold">Κλείστε Ραντεβού</h3>
+                    <a 
+                      href="https://www.doctoranytime.gr/d/Velonistis/augousti-ilektra"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#8B4513]/80 hover:text-[#8B4513] transition-colors"
+                    >
+                      Μέσω DoctorAnytime
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white py-12 px-4">
