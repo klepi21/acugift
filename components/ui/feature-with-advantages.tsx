@@ -2,26 +2,32 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { NotificationSignup } from "@/components/NotificationSignup";
 
-function Feature() {
+interface FeatureProps {
+  showEmailSignup: boolean;
+}
+
+function Feature({ showEmailSignup }: FeatureProps) {
   return (
     <div className="w-full py-12">
       <div className="container mx-auto">
         <div className="flex gap-4 flex-col items-start">
           <div>
-            <Badge className="bg-[#8B4513] text-white">Περιορισμένες Θέσεις</Badge>
+            <Badge className="bg-[#8B4513] text-white">Μόνο για το Wellness Open Day</Badge>
           </div>
           <div className="flex gap-4 flex-col">
             <h2 className="text-3xl md:text-5xl tracking-tighter lg:max-w-xl font-regular text-[#8B4513]">
               Wellness Open Day
             </h2>
             <p className="text-lg max-w-xl lg:max-w-xl leading-relaxed tracking-tight text-[#8B4513]/80">
-              Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού. Οι θέσεις είναι περιορισμένες - εγγραφείτε τώρα για να ενημερωθείτε πρώτοι για την επόμενη διαθέσιμη ημερομηνία!
+              Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού με μόνο 10€. Οι θέσεις είναι περιορισμένες - κλείστε τώρα τη θέση σας!
             </p>
           </div>
 
-          <div className="w-full max-w-md">
-            <NotificationSignup />
-          </div>
+          {showEmailSignup && (
+            <div className="w-full max-w-md">
+              <NotificationSignup />
+            </div>
+          )}
 
           <div className="flex gap-10 pt-12 flex-col w-full">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -30,25 +36,25 @@ function Feature() {
                 <div className="flex flex-col gap-1">
                   <p className="text-[#8B4513] font-medium">25λεπτη Συνεδρία</p>
                   <p className="text-[#8B4513]/80 text-sm">
-                    Εξατομικευμένη συνεδρία γνωριμίας με το βελονισμό
+                    Ατομική συνεδρία γνωριμίας με το βελονισμό
                   </p>
                 </div>
               </div>
               <div className="flex flex-row gap-4 items-start">
                 <Check className="w-5 h-5 mt-1 text-[#8B4513]" />
                 <div className="flex flex-col gap-1">
-                  <p className="text-[#8B4513] font-medium">Προσιτή Τιμή</p>
+                  <p className="text-[#8B4513] font-medium">Μόνο 10€</p>
                   <p className="text-[#8B4513]/80 text-sm">
-                    Μόνο 10€ για μια ολοκληρωμένη εμπειρία βελονισμού
+                    Ειδική τιμή για το Wellness Open Day
                   </p>
                 </div>
               </div>
               <div className="flex flex-row gap-4 items-start">
                 <Check className="w-5 h-5 mt-1 text-[#8B4513]" />
                 <div className="flex flex-col gap-1">
-                  <p className="text-[#8B4513] font-medium">Εξειδικευμένη Φροντίδα</p>
+                  <p className="text-[#8B4513] font-medium">Περιορισμένες Θέσεις</p>
                   <p className="text-[#8B4513]/80 text-sm">
-                    Από έμπειρη ιατρό με εξειδίκευση στο βελονισμό
+                    Κλείστε έγκαιρα τη θέση σας
                   </p>
                 </div>
               </div>
@@ -64,9 +70,9 @@ function Feature() {
               <div className="flex flex-row gap-4 items-start">
                 <Check className="w-5 h-5 mt-1 text-[#8B4513]" />
                 <div className="flex flex-col gap-1">
-                  <p className="text-[#8B4513] font-medium">Σύγχρονες Εγκαταστάσεις</p>
+                  <p className="text-[#8B4513] font-medium">Άνετος Χώρος</p>
                   <p className="text-[#8B4513]/80 text-sm">
-                    Σε ένα άνετο και φιλόξενο περιβάλλον
+                    Σε ένα ήρεμο και φιλικό περιβάλλον
                   </p>
                 </div>
               </div>

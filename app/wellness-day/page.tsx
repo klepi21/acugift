@@ -44,49 +44,56 @@ interface WellnessSlot {
 export default function WellnessDayPage() {
   const [wellnessDay, setWellnessDay] = useState<WellnessDay | null>(null);
   const [slots, setSlots] = useState<WellnessSlot[]>([]);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<WellnessSlot | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: '',
-      email: '',
-      phone: '',
-    }
   });
 
   useEffect(() => {
-    loadWellnessDay();
+    const fetchWellnessDay = async () => {
+      const supabase = createClient();
+      const { data: wellnessDays, error: wellnessDayError } = await supabase
+        .from('wellness_days')
+        .select('*')
+        .gte('date', new Date().toISOString().split('T')[0])
+        .order('date', { ascending: true })
+        .limit(1);
+
+      if (wellnessDayError) {
+        console.error('Error fetching wellness day:', wellnessDayError);
+        return;
+      }
+
+      if (wellnessDays && wellnessDays.length > 0) {
+        setWellnessDay(wellnessDays[0]);
+
+        const { data: slotsData, error: slotsError } = await supabase
+          .from('wellness_slots')
+          .select('*')
+          .eq('wellness_day_id', wellnessDays[0].id)
+          .order('start_time', { ascending: true });
+
+        if (slotsError) {
+          console.error('Error fetching slots:', slotsError);
+          return;
+        }
+
+        if (slotsData) {
+          setSlots(slotsData);
+        }
+      }
+    };
+
+    fetchWellnessDay();
   }, []);
 
-  const loadWellnessDay = async () => {
-    const supabase = createClient();
-    
-    // Get the next wellness day
-    const { data: dayData } = await supabase
-      .from('wellness_days')
-      .select('*')
-      .gte('date', new Date().toISOString())
-      .order('date')
-      .limit(1)
-      .single();
-
-    if (dayData) {
-      setWellnessDay(dayData);
-      
-      // Get available slots
-      const { data: slotsData } = await supabase
-        .from('wellness_slots')
-        .select('*')
-        .eq('wellness_day_id', dayData.id)
-        .order('start_time');
-
-      if (slotsData) {
-        setSlots(slotsData);
-      }
+  useEffect(() => {
+    if (!selectedSlot) {
+      form.reset();
     }
-  };
+  }, [selectedSlot, form]);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!selectedSlot) {
@@ -103,7 +110,7 @@ export default function WellnessDayPage() {
         .from('wellness_bookings')
         .insert([
           {
-            slot_id: selectedSlot,
+            slot_id: selectedSlot.id,
             full_name: data.fullName,
             email: data.email,
             phone: data.phone
@@ -116,7 +123,7 @@ export default function WellnessDayPage() {
       const { error: slotError } = await supabase
         .from('wellness_slots')
         .update({ is_booked: true })
-        .eq('id', selectedSlot);
+        .eq('id', selectedSlot.id);
 
       if (slotError) throw slotError;
 
@@ -135,7 +142,7 @@ export default function WellnessDayPage() {
               <div style="background: #FFF5E9; padding: 20px; border-radius: 10px; margin: 20px 0;">
                 <h2 style="color: #8B4513;">Στοιχεία Κράτησης</h2>
                 <p><strong>Ημερομηνία:</strong> ${format(new Date(wellnessDay!.date), 'd MMMM yyyy', { locale: el })}</p>
-                <p><strong>Ώρα:</strong> ${format(new Date('1970-01-01T' + slots.find(s => s.id === selectedSlot)?.start_time), 'HH:mm')}</p>
+                <p><strong>Ώρα:</strong> ${format(new Date(`2000-01-01T${selectedSlot.start_time}`), 'HH:mm')}</p>
                 <p><strong>Κόστος:</strong> 10€ (Πληρωμή στο ιατρείο)</p>
               </div>
               <p>Σας περιμένουμε στο ιατρείο μας!</p>
@@ -167,7 +174,7 @@ export default function WellnessDayPage() {
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
         <div className="max-w-6xl mx-auto">
-          <Feature />
+          <Feature showEmailSignup={true} />
 
           <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
             <div className="grid md:grid-cols-3 gap-8">
@@ -193,22 +200,6 @@ export default function WellnessDayPage() {
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 text-[#8B4513]">
-                  <Calendar className="h-6 w-6 shrink-0" />
-                  <div>
-                    <h3 className="font-semibold">Κλείστε Ραντεβού</h3>
-                    <a 
-                      href="https://www.doctoranytime.gr/d/Velonistis/augousti-ilektra"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#8B4513]/80 hover:text-[#8B4513] transition-colors"
-                    >
-                      Μέσω DoctorAnytime
-                    </a>
-                  </div>
-                </div>
-              </div>
             </div>
           </Card>
         </div>
@@ -217,336 +208,92 @@ export default function WellnessDayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl overflow-hidden">
-          <div className="relative">
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#FBDAC6]/20 rounded-full -translate-y-16 translate-x-16" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#8B4513]/10 rounded-full translate-y-12 -translate-x-12" />
-            
-            <div className="text-center space-y-6 mb-12 relative">
-              <h1 className="text-4xl md:text-5xl font-bold text-[#8B4513] tracking-tight">
-                Wellness Open Day
-              </h1>
-              <p className="text-lg text-[#8B4513]/80 max-w-2xl mx-auto leading-relaxed">
-                Γνωρίστε τον βελονισμό σε μια ειδική ημέρα γνωριμίας. Μια μοναδική ευκαιρία να εξοικειωθείτε με τη θεραπεία και να ανακαλύψετε τα οφέλη της
-              </p>
-            </div>
+    <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
+      <div className="max-w-6xl mx-auto">
+        <Feature showEmailSignup={false} />
 
-            <div className="grid md:grid-cols-2 gap-12 mb-12 relative">
-              <div className="space-y-6">
-                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                  <div className="flex items-center gap-4 text-[#8B4513]">
-                    <Clock className="h-8 w-8" />
-                    <div>
-                      <h3 className="font-semibold">Διάρκεια Συνεδρίας</h3>
-                      <p className="text-[#8B4513]/80">25λεπτη συνεδρία γνωριμίας</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                  <div className="flex items-center gap-4 text-[#8B4513]">
-                    <Euro className="h-8 w-8" />
-                    <div>
-                      <h3 className="font-semibold">Κόστος</h3>
-                      <p className="text-[#8B4513]/80">Μόνο 10€</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white/50 rounded-xl p-6 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                  <div className="flex items-start gap-4 text-[#8B4513]">
-                    <Heart className="h-8 w-8 shrink-0" />
-                    <div>
-                      <h3 className="font-semibold">Εξατομικευμένη Εμπειρία</h3>
-                      <p className="text-[#8B4513]/80">
-                        Προσωπική συνεδρία βελονισμού για χαλάρωση και ευεξία
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-[#8B4513]/5 p-8 rounded-2xl backdrop-blur-sm">
-                <h2 className="text-2xl font-semibold text-[#8B4513] mb-6">
-                  Τι να Περιμένετε
-                </h2>
-                <ul className="space-y-4">
-                  <li className="flex items-start gap-3">
-                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
-                      <span className="text-[#8B4513] font-bold">1</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-[#8B4513]">Προσωπική Συνάντηση</h4>
-                      <p className="text-[#8B4513]/80 text-sm">Γνωριμία με την Ιατρό</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
-                      <span className="text-[#8B4513] font-bold">2</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-[#8B4513]">Αξιολόγηση</h4>
-                      <p className="text-[#8B4513]/80 text-sm">Κατανόηση των αναγκών σας</p>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <div className="bg-[#8B4513]/10 p-2 rounded-lg">
-                      <span className="text-[#8B4513] font-bold">3</span>
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-[#8B4513]">Θεραπεία</h4>
-                      <p className="text-[#8B4513]/80 text-sm">Εισαγωγή στη μέθοδο του βελονισμού</p>
-                    </div>
-                  </li>
-                </ul>
+        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="mb-8">
+              <h3 className="text-xl font-semibold text-[#8B4513] mb-2">
+                Διαθέσιμες Ώρες - {format(new Date(wellnessDay.date), 'dd MMMM yyyy', { locale: el })}
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {slots.map((slot) => (
+                  <Button
+                    key={slot.id}
+                    onClick={() => setSelectedSlot(slot)}
+                    disabled={slot.is_booked}
+                    variant={selectedSlot?.id === slot.id ? 'default' : 'outline'}
+                    className={`w-full ${
+                      slot.is_booked
+                        ? 'bg-gray-100 text-gray-400'
+                        : selectedSlot?.id === slot.id
+                        ? 'bg-[#8B4513] text-white hover:bg-[#6d3610]'
+                        : 'text-[#8B4513] hover:bg-[#8B4513] hover:text-white'
+                    }`}
+                  >
+                    {format(new Date(`2000-01-01T${slot.start_time}`), 'HH:mm')}
+                  </Button>
+                ))}
               </div>
             </div>
 
-            {!wellnessDay ? (
-              <div className="max-w-2xl mx-auto">
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8 rounded-r-lg shadow-sm">
-                  <p className="text-[#8B4513] mb-2 font-medium">
-                    Δεν υπάρχουν προγραμματισμένες ημέρες αυτή τη στιγμή.
-                  </p>
-                  <p className="text-[#8B4513]/80 text-sm">
-                    Εγγραφείτε παρακάτω για να ενημερωθείτε πρώτοι για την επόμενη διαθέσιμη ημερομηνία!
-                  </p>
-                </div>
-                <NotificationSignup />
-              </div>
-            ) : allSlotsBooked ? (
-              <div className="text-center space-y-6">
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mx-auto max-w-xl rounded-r-lg shadow-sm">
-                  <p className="text-[#8B4513]">
-                    Όλες οι διαθέσιμες ώρες έχουν κλειστεί για αυτή την ημέρα.
-                  </p>
-                </div>
-                <NotificationSignup />
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h2 className="text-xl font-semibold text-[#8B4513] mb-4">
-                    Επιλέξτε Ώρα
-                  </h2>
-                  <div className="grid grid-cols-2 gap-2">
-                    {slots.map((slot) => (
-                      <Button
-                        key={slot.id}
-                        variant={selectedSlot === slot.id ? "default" : "outline"}
-                        className={`${
-                          slot.is_booked 
-                            ? "opacity-50 cursor-not-allowed" 
-                            : "hover:bg-[#8B4513] hover:text-white"
-                        } ${
-                          selectedSlot === slot.id 
-                            ? "bg-[#8B4513] text-white" 
-                            : "text-[#8B4513]"
-                        }`}
-                        disabled={slot.is_booked}
-                        onClick={() => setSelectedSlot(slot.id)}
-                      >
-                        {format(new Date('1970-01-01T' + slot.start_time), 'HH:mm')}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h2 className="text-xl font-semibold text-[#8B4513] mb-4">
-                    Στοιχεία Κράτησης
-                  </h2>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="fullName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Ονοματεπώνυμο</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Τηλέφωνο</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Button 
-                        type="submit" 
-                        className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white"
-                        disabled={isLoading || !selectedSlot}
-                      >
-                        {isLoading ? "Επεξεργασία..." : "Ολοκλήρωση Κράτησης"}
-                      </Button>
-                    </form>
-                  </Form>
-                </div>
-              </div>
+            {selectedSlot && !selectedSlot.is_booked && (
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#8B4513]">Ονοματεπώνυμο</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#8B4513]">Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" className="bg-white/50 border-[#8B4513]/20" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-[#8B4513]">Τηλέφωνο</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Επεξεργασία...' : 'Κράτηση'}
+                  </Button>
+                </form>
+              </Form>
             )}
-          </div>
-        </Card>
-
-       
-
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
-          <h2 className="text-2xl font-semibold text-[#8B4513] mb-8 text-center">
-            Οφέλη Βελονισμού
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
-              <Brain className="h-10 w-10 text-[#8B4513] mx-auto" />
-              <p className="text-[#8B4513] font-medium">Μείωση Στρες</p>
-            </div>
-            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
-              <HeartPulse className="h-10 w-10 text-[#8B4513] mx-auto" />
-              <p className="text-[#8B4513] font-medium">Ανακούφιση από Πόνους</p>
-            </div>
-            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
-              <Bed className="h-10 w-10 text-[#8B4513] mx-auto" />
-              <p className="text-[#8B4513] font-medium">Καλύτερος Ύπνος</p>
-            </div>
-            <div className="bg-white/50 p-6 rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-300 text-center space-y-3">
-              <Zap className="h-10 w-10 text-[#8B4513] mx-auto" />
-              <p className="text-[#8B4513] font-medium">Αύξηση Ενέργειας</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-[#8B4513]">
-                <MapPin className="h-6 w-6 shrink-0" />
-                <div>
-                  <h3 className="font-semibold">Διεύθυνση</h3>
-                  <p className="text-[#8B4513]/80">Εφέσου 20, Άνω Τούμπα</p>
-                  <p className="text-[#8B4513]/80">Θεσσαλονίκη</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 text-[#8B4513]">
-                <Phone className="h-6 w-6 shrink-0" />
-                <div>
-                  <h3 className="font-semibold">Τηλέφωνα Επικοινωνίας</h3>
-                  <p className="text-[#8B4513]/80">2310 930 900</p>
-                  <p className="text-[#8B4513]/80">6981 958 248</p>
-                </div>
-              </div>
-            </div>
-
-            
           </div>
         </Card>
       </div>
     </main>
-  );
-}
-
-function NotificationSignup() {
-  const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    try {
-      setIsLoading(true);
-      const supabase = createClient();
-
-      const { error } = await supabase
-        .from('wellness_notifications')
-        .insert([{ email }]);
-
-      if (error) {
-        if (error.code === '23505') { // Unique violation
-          alert('Το email σας είναι ήδη καταχωρημένο στη λίστα μας.');
-        } else {
-          throw error;
-        }
-      } else {
-        setIsSubmitted(true);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Υπήρξε ένα πρόβλημα. Παρακαλώ προσπαθήστε ξανά.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  if (isSubmitted) {
-    return (
-      <div className="text-center space-y-4 max-w-xl mx-auto mt-8">
-        <div className="bg-green-50 border-l-4 border-green-400 p-4">
-          <p className="text-[#8B4513]">
-            Ευχαριστούμε! Θα σας ενημερώσουμε για το επόμενο Wellness Open Day.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="text-center space-y-4 max-w-xl mx-auto mt-8">
-      <h2 className="text-xl font-semibold text-[#8B4513]">
-        Μείνετε Ενημερωμένοι
-      </h2>
-      <p className="text-[#8B4513]/80">
-        Εγγραφείτε για να ενημερωθείτε για το επόμενο Wellness Open Day
-      </p>
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <Input
-          type="email"
-          placeholder="Το email σας"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="flex-1"
-        />
-        <Button 
-          type="submit" 
-          className="bg-[#8B4513] hover:bg-[#6d3610] text-white"
-          disabled={isLoading}
-        >
-          {isLoading ? "Επεξεργασία..." : "Εγγραφή"}
-        </Button>
-      </form>
-    </div>
   );
 } 

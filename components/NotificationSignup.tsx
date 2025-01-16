@@ -22,10 +22,15 @@ export function NotificationSignup() {
         .from('wellness_notifications')
         .insert([{ email }]);
 
-      if (error) throw error;
-
-      setIsSubmitted(true);
-      setEmail('');
+      if (error) {
+        if (error.code === '23505') { // Unique violation
+          alert('Το email σας είναι ήδη καταχωρημένο στη λίστα μας.');
+        } else {
+          throw error;
+        }
+      } else {
+        setIsSubmitted(true);
+      }
     } catch (error) {
       console.error('Error:', error);
       alert('Υπήρξε ένα πρόβλημα. Παρακαλώ προσπαθήστε ξανά.');
@@ -37,8 +42,8 @@ export function NotificationSignup() {
   if (isSubmitted) {
     return (
       <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-r-lg">
-        <p className="text-green-700">
-          Ευχαριστούμε! Θα σας ενημερώσουμε μόλις είναι διαθέσιμη η επόμενη ημερομηνία.
+        <p className="text-[#8B4513]">
+          Ευχαριστούμε! Θα σας ενημερώσουμε για το επόμενο Wellness Open Day.
         </p>
       </div>
     );
