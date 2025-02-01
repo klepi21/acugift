@@ -214,9 +214,6 @@ export default function WellnessDayPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-[#8B4513] mb-4">
             Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού με μόνο 10€
           </h2>
-          <p className="text-[#8B4513]/80">
-            Οι θέσεις είναι περιορισμένες - συμπληρώστε το email σας για να ενημερωθείτε άμεσα για την επόμενη διαθέσιμη ημερομηνία!
-          </p>
         </div>
 
         <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
