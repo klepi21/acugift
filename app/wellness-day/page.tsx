@@ -210,8 +210,6 @@ export default function WellnessDayPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
-        <Feature showEmailSignup={false} />
-
         <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-6 md:mt-8">
           <div className="max-w-2xl mx-auto">
             <div className="mb-6 md:mb-8">
@@ -238,8 +236,26 @@ export default function WellnessDayPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </Card>
 
-            {selectedSlot && !selectedSlot.is_booked && (
+        {selectedSlot && !selectedSlot.is_booked && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            <div className="bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl p-6">
+              <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">Επιλεγμένη Ώρα</h3>
+              <p className="text-sm md:text-base">
+                <strong>Ημερομηνία:</strong> {format(new Date(wellnessDay.date), 'dd MMMM yyyy', { locale: el })}
+              </p>
+              <p className="text-sm md:text-base">
+                <strong>Ώρα:</strong> {format(new Date(`2000-01-01T${selectedSlot.start_time}`), 'HH:mm')}
+              </p>
+              <p className="text-sm md:text-base">
+                <strong>Κόστος:</strong> 10€ (Πληρωμή στο ιατρείο)
+              </p>
+            </div>
+
+            <div className="bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl p-6">
+              <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">Κράτηση</h3>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
                   <FormField
@@ -290,9 +306,13 @@ export default function WellnessDayPage() {
                   </Button>
                 </form>
               </Form>
-            )}
+            </div>
           </div>
-        </Card>
+        )}
+
+        <div className="mt-8">
+          <Feature showEmailSignup={false} />
+        </div>
       </div>
     </main>
   );
