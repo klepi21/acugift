@@ -210,13 +210,23 @@ export default function WellnessDayPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FBDAC6] to-white">
       <div className="max-w-6xl mx-auto px-4 md:px-6">
-        <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-6 md:mt-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="mb-6 md:mb-8">
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#8B4513] mb-4">
+            Μια μοναδική ευκαιρία να γνωρίσετε τα οφέλη του βελονισμού με μόνο 10€
+          </h2>
+          <p className="text-[#8B4513]/80">
+            Οι θέσεις είναι περιορισμένες - συμπληρώστε το email σας για να ενημερωθείτε άμεσα για την επόμενη διαθέσιμη ημερομηνία!
+          </p>
+        </div>
+
+        <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Left Column - Date and Time Slots */}
+            <div>
               <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">
                 Διαθέσιμες Ώρες - {format(new Date(wellnessDay.date), 'dd MMMM yyyy', { locale: el })}
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {slots.map((slot) => (
                   <Button
                     key={slot.id}
@@ -236,83 +246,98 @@ export default function WellnessDayPage() {
                 ))}
               </div>
             </div>
+
+            {/* Right Column - Booking Form */}
+            <div>
+              {selectedSlot && !selectedSlot.is_booked ? (
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#8B4513]">Ονοματεπώνυμο</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#8B4513]">Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" className="bg-white/50 border-[#8B4513]/20" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-[#8B4513]">Τηλέφωνο</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="bg-white/50 border-[#8B4513]/20" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Επεξεργασία...' : 'Κράτηση'}
+                    </Button>
+                  </form>
+                </Form>
+              ) : (
+                <div className="h-full flex items-center justify-center text-[#8B4513]">
+                  <p className="text-center">Παρακαλώ επιλέξτε διαθέσιμη ώρα</p>
+                </div>
+              )}
+            </div>
           </div>
         </Card>
 
-        {selectedSlot && !selectedSlot.is_booked && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-            <div className="bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl p-6">
-              <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">Επιλεγμένη Ώρα</h3>
-              <p className="text-sm md:text-base">
-                <strong>Ημερομηνία:</strong> {format(new Date(wellnessDay.date), 'dd MMMM yyyy', { locale: el })}
-              </p>
-              <p className="text-sm md:text-base">
-                <strong>Ώρα:</strong> {format(new Date(`2000-01-01T${selectedSlot.start_time}`), 'HH:mm')}
-              </p>
-              <p className="text-sm md:text-base">
-                <strong>Κόστος:</strong> 10€ (Πληρωμή στο ιατρείο)
-              </p>
+        {/* Features section moved below the booking card */}
+        <Feature showEmailSignup={false} />
+
+        {/* Contact information card */}
+        <Card className="p-6 md:p-8 bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-[#8B4513]">
+                <MapPin className="h-6 w-6 shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">Διεύθυνση</h3>
+                  <p className="text-[#8B4513]/80 text-sm md:text-base">Εφέσου 20, Άνω Τούμπα</p>
+                  <p className="text-[#8B4513]/80 text-sm md:text-base">Θεσσαλονίκη</p>
+                </div>
+              </div>
             </div>
 
-            <div className="bg-white/80 backdrop-blur-sm border-none shadow-xl rounded-2xl p-6">
-              <h3 className="text-lg md:text-xl font-semibold text-[#8B4513] mb-4">Κράτηση</h3>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="fullName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Ονοματεπώνυμο</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
-                        </FormControl>
-                        <FormMessage className="text-sm" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="email" className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
-                        </FormControl>
-                        <FormMessage className="text-sm" />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-[#8B4513] text-sm md:text-base">Τηλέφωνο</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="bg-white/50 border-[#8B4513]/20 text-sm md:text-base py-2" />
-                        </FormControl>
-                        <FormMessage className="text-sm" />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="submit"
-                    className="w-full bg-[#8B4513] hover:bg-[#6d3610] text-white text-sm md:text-base py-2 md:py-3"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Επεξεργασία...' : 'Κράτηση'}
-                  </Button>
-                </form>
-              </Form>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-[#8B4513]">
+                <Phone className="h-6 w-6 shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-base md:text-lg">Τηλέφωνα Επικοινωνίας</h3>
+                  <p className="text-[#8B4513]/80 text-sm md:text-base">2310 930 900</p>
+                  <p className="text-[#8B4513]/80 text-sm md:text-base">6981 958 248</p>
+                </div>
+              </div>
             </div>
           </div>
-        )}
-
-        <div className="mt-8">
-          <Feature showEmailSignup={false} />
-        </div>
+        </Card>
       </div>
     </main>
   );
